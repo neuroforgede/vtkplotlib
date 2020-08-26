@@ -100,30 +100,27 @@ def _actor_collection(actors, collection=None):
 
 class pick(object):
 
-    def __init__(self, style_or_iren):
-        if isinstance(style_or_iren, vtk.vtkRenderWindowInteractor):
-            iren = style_or_iren
-            style = iren.GetInteractionStyle()
-        elif isinstance(style_or_iren, vtk.vtkInteractorStyle):
-            style = style_or_iren
-            iren = style.GetInteractor()
-        else:
-            raise TypeError()
+    def __init__(self, style):
+        style = getattr(style, "style", style)
+        if not isinstance(style, vtk.vtkInteractorStyle):
+            raise TypeError(
+                "pick requires either a figure or a or a vtkInteractorStyle")
 
         self.style = style
-        self.iren = iren
-        self.picker = iren.GetPicker()
+        self.picker = vtk.vtkPropPicker()
         self.update()
 
     def update(self):
-        self.point_2d = self.iren.GetEventPosition()
+        iren = self.style.GetInteractor()
+        self.point_2D = iren.GetEventPosition()
 
     @property
-    def point_2d(self):
+    def point_2D(self):
+        """The 2D coordinate in pixels where the event happened. """
         return self.picker.GetSelectionPoint()
 
-    @point_2d.setter
-    def point_2d(self, point):
+    @point_2D.setter
+    def point_2D(self, point):
         if len(point) == 2:
             self.picker.Pick(point[0], point[1], 0,
                              self.style.GetCurrentRenderer())
