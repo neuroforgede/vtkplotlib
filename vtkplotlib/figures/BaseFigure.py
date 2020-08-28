@@ -86,6 +86,7 @@ class BaseFigure(object):
 
     def _connect_renderer(self):
         self.renWin.AddRenderer(self.renderer)
+        self.renWin.SetAlphaBitPlanes(1)
         self.style.SetCurrentRenderer(self.renderer)
         _vtk_errors.handler.attach(self.renderer)
 

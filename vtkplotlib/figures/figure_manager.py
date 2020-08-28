@@ -314,6 +314,7 @@ def screenshot_fig(magnification=1, pixels=None, trim_pad_width=None,
     # screenshot code:
     win_to_image_filter = vtk.vtkWindowToImageFilter()
     win_to_image_filter.SetInput(fig.renWin)
+    win_to_image_filter.SetInputBufferTypeToRGBA()
 
     # Normalise and set user inputs for magnification.
 
@@ -345,7 +346,7 @@ def screenshot_fig(magnification=1, pixels=None, trim_pad_width=None,
     arr = image_io.vtkimagedata_to_array(win_to_image_filter.GetOutput())
     arr = image_io.trim_image(arr, fig.background_color, trim_pad_width)
 
-    return arr
+    return np.ascontiguousarray(arr)
 
 
 def save_fig(path, magnification=1, pixels=None, trim_pad_width=None,
